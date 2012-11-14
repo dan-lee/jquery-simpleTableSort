@@ -1,4 +1,4 @@
-## [jQuery](http://jquery.com) - easy table sort
+## [jQuery](http://jquery.com) - simple table sort
 
 
 This is a simple plugin for jQuery, which adds the capability of sorting rows of your tables by your own rules.  
