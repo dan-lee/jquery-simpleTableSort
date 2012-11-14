@@ -22,24 +22,22 @@ You have to adjust your table slightly, so that the plugin knows how to sort you
    <th class="sort-numeric">Id</th>
    <th class="sort-alphabetic">Name</th>
    <th class="sort-date">Birth date</th>
+   <th class="sort-float">Height</th>
   </tr>
  </thead>
 
  <tbody>
-  <tr>
-   <td>2</td>
-   <td>John</td>
-   <td>02 Feb, 1989</td>
- </tr>
- <tr>
-  <td>12</td>
-  <td>Peter</td>
-  <td>17 Jul, 1957</td>
- </tr>
  <!-- keep your data going -->
  </tbody>
 </table>
 ```
+
+Just add one of the following built-in sort methods as class to your `th` tag:
+
+* `sort-alphabetical`: Sorts data by alphabet (*case ignored*)
+* `sort-numeric`: Sorts data by numeric values
+* `sort-date`: Sorts data by date (Note: relies on JavaScript built-in [`Date`](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date) object. Has to be compliant to [RFC2822 Section 3.3](http://tools.ietf.org/html/rfc2822#page-14))
+* `sort-float`: Sorts data by floating point values
 
 ### Advanced usage
 
