@@ -1,38 +1,7 @@
 /**
  * Easiest way to sort your tables
  *
- * Basic usage:
- *
- * Javascript:
- *  $('#someTable').tableSort();
- *
- * HTML:
- *  <table id="someTable">
- *    <thead>
- *     <tr>
- *      <th class="sort-numeric">Id</th>
- *      <th class="sort-alphabetic">Name</th>
- *      <th class="sort-date">Birth date</th>
- *     </tr>
- *    </thead>
- *
- *    <tbody>
- *     <tr>
- *      <td>2</td>
- *      <td>John</td>
- *      <td>02 Feb, 1989</td>
- *     </tr>
- *     <tr>
- *      <td>12</td>
- *      <td>Peter</td>
- *      <td>17 Jul, 1957</td>
- *     </tr>
- *     ... keep on going
- *    </tbody>
- *  </table>
- *
- *
- *
+ * For further information go to <https://github.com/dan-lee/jquery-easyTableSort>
  *
  * @author Daniel Lehr <daniellehr@gmx.de>
  * @internal-coding = utf-8
@@ -41,7 +10,7 @@
  */
 
 (function($) {
-  $.fn.easyTableSort = function(options) {
+  $.fn.simpleTableSort = function(options) {
 
     var defaultOptions = {
       defaultOrder: 'asc',
@@ -54,6 +23,9 @@
 
     var table = $(this);
     var rows  = table.find('tbody').children();
+    var cols  = table.find('thead').find('th');
+
+    cols.on('click', sort);
 
     // http://stackoverflow.com/a/1353711/612202
     function isDate(d) {
@@ -86,10 +58,10 @@
     };
     $.extend(options.sortMethods, defaultSortMethods);
 
-    table.find('thead').find('th').on('click', sort);
-
     // default ordering
     var orderBy = options.defaultOrder;
+
+    var orderStates = [];
 
     function toggleOrder(el) {
       if (!el.hasClass('sort-asc') && !el.hasClass('sort-desc')) {

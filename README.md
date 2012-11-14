@@ -2,14 +2,14 @@
 
 
 This is a simple plugin for jQuery, which adds the capability of sorting rows of your tables by your own rules.  
-[**Click here to see a demo**](http://agixo.de/dev/jquery-easyTableSort/demo.html)
+[**Click here to see a demo**](http://agixo.de/dev/jquery-simpleTableSort/demo.html)
 
 ### Basic usage
 
 The easiest way to start off is:
 ```javascript
 $(function() {
-  $('#myTable').easyTableSort();
+  $('#myTable').simpleTableSort();
 });
 ```
 
@@ -27,7 +27,7 @@ You have to adjust your table slightly, so that the plugin knows how to sort you
  </thead>
 
  <tbody>
- <!-- keep your data going -->
+ <!-- lots of data -->
  </tbody>
 </table>
 ```
