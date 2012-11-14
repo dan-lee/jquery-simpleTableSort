@@ -1,0 +1,46 @@
+body {
+  font-family: Georgia, Arial, sans-serif;
+}
+
+table {
+  border: 1px solid #94a7ff;
+  border-top: 1px solid #94a7ff;
+}
+
+td, th {
+  padding: 5px;
+}
+
+th {
+  background: #bed7ff;
+  font-weight: bold;
+  border-right: 1px solid #94a7ff;
+  border-bottom: 1px solid #94a7ff;
+}
+
+th:last-child {
+  border-right: 0;
+}
+
+th:hover {
+  background: #aed1ff;
+  cursor: pointer;
+}
+
+td {
+  border: 1px solid #bbcbff;
+  border-left: 0;
+  border-top: 0;
+}
+
+td:last-child {
+  border-right: 0;
+}
+
+tr:first-child td {
+  border-top: 0;
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
