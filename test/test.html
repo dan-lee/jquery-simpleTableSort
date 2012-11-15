@@ -77,21 +77,30 @@
     });
     // end check descending
 
-    module('Options', {
-      teardown: function() {
-        table.remove();
-      }
-    });
+    module('Options');
 
     test('Change prefix', function() {
       var before, after;
       table = createTestTable(testColumns, testRows, 'sortable').simpleTableSort({ prefix: 'sortable' });
 
       before = table.find('tbody td').eq(0).text();
-      table.find('th:eq(0)').trigger('click');
+      table.find('th').eq(0).trigger('click');
       after = table.find('tbody td').eq(0).text();
 
       notEqual(after, before, 'Sort order has not changed');
+
+      var classList = table.find('th').eq(0).prop('class').split(' ');
+      var result = true;
+      $.each(classList, function(i, className) {
+        if (!/sortable-/.test(className)) {
+          result = false;
+          return false;
+        }
+      });
+
+      ok(result, 'Class prefix was not changed');
+
+      table.remove();
     });
 
     test('Excluded rows', function() {
@@ -112,6 +121,8 @@
       table.find('th').eq(3).trigger('click');
       after = table.find('tbody td').eq(3).text();
       equal(after, before, 'Sort order has changed, although it was excluded');
+
+      table.remove();
     });
   });
   </script>
