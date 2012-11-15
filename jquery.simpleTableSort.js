@@ -102,7 +102,7 @@
       // is the clicked column an excluded one? if so: abort
       var abort = false;
       $.each(options.excludeSortColumns, function(i, val) {
-        val += val < 0 ? len : -1;
+        val += val < 0 ? len : 0;
 
         if (current === val) {
           abort = true;
