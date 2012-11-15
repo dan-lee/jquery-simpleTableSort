@@ -11,9 +11,16 @@
 
 (function($) {
   $.fn.simpleTableSort = function(options) {
+    var table = $(this);
+    var rows = table.find('tbody').children();
+    var headCols = table.find('thead').find('th');
+
+    var sortOrder = new Array(headCols.length);
+    var sortModes = ['asc', 'desc'];
 
     var defaultOptions = {
-      defaultOrder: 'asc',
+      prefix: 'sort-',
+      defaultOrder: sortModes[0],
       sortMethods: {},
       excludeSortColumns: [],
       onBeforeSort: function () {},
@@ -21,11 +28,7 @@
     };
     options = $.extend(defaultOptions, options || {});
 
-    var table = $(this);
-    var rows  = table.find('tbody').children();
-    var cols  = table.find('thead').find('th');
-
-    cols.on('click', sort);
+    headCols.on('click', sort);
 
     // http://stackoverflow.com/a/1353711/612202
     function isDate(d) {
@@ -58,31 +61,42 @@
     };
     $.extend(options.sortMethods, defaultSortMethods);
 
-    // default ordering
-    var orderBy = options.defaultOrder;
+    if (!Array.prototype.getIndexByValue) {
+      Array.prototype.getIndexByValue = function(value) {
+        var result = false;
+        $.each(this, function(index, item) {
+          if (value === item) {
+            result = index;
+            return false;
+          }
+        });
+        return result;
+      };
+    }
 
-    var orderStates = [];
+    function toggleOrder(col) {
+      var index = col.index;
+      var currentOrder = sortOrder[index];
+      var newKey, oldKey;
 
-    function toggleOrder(el) {
-      if (!el.hasClass('sort-asc') && !el.hasClass('sort-desc')) {
-        el.addClass('sort-' + orderBy);
-      } else if (el.hasClass('sort-asc')) {
-        el
-          .addClass('sort-desc')
-          .removeClass('sort-asc');
+      if (typeof currentOrder === 'undefined') {
+        newKey = sortModes.getIndexByValue(options.defaultOrder);
+        sortOrder[index] = sortModes[newKey];
+        col.element.addClass(options.prefix + sortModes[newKey]);
+      } else {
+        oldKey = sortModes.getIndexByValue(currentOrder);
+        // little trick for toggling of two values:
+        // 1. cast to bool, 2. negate the value, 3. cast back to int
+        newKey = +!oldKey;
+        sortOrder[index] = sortModes[newKey];
 
-        orderBy = 'desc';
-        console.log('order set to desc');
-      } else if (el.hasClass('sort-desc')) {
-        el
-          .addClass('sort-asc')
-          .removeClass('sort-desc');
-
-        orderBy = 'asc';
+        col.element.removeClass(options.prefix + sortModes[oldKey]).addClass(options.prefix + sortModes[newKey]);
       }
     }
 
-    function isExcluded(current, len) {
+    function isExcluded(current) {
+      var len = headCols.length;
+
       // is the clicked column an excluded one? if so: abort
       var abort = false;
       $.each(options.excludeSortColumns, function(i, val) {
@@ -96,18 +110,17 @@
     }
 
     function sort() {
-      var el = $(this);
-      var columns = el.parent().children();
-      var columnLength = columns.length;
-      var columnIndex = columns.index(el);
+      var element = $(this);
+      var columnLength = headCols.length;
+      var columnIndex = headCols.index(element);
 
       var cn = this.className;
-      // check if there's a class starting with 'sort-'
-      if (/\bsort-/.test(cn)) {
-        var method = cn.match(/sort-([^\s]+)/)[1];
+      // check if there's a class starting with the given prefix
+      if (new RegExp('\\b' + options.prefix).test(cn)) {
+        var method = cn.match(new RegExp(options.prefix + '([^\\s]+)'))[1];
 
         if (options.sortMethods.hasOwnProperty(method)) {
-          options.onBeforeSort.call(el, columnIndex+1);
+          options.onBeforeSort.call(element, columnIndex+1);
 
           // is the clicked column an excluded one? if so: abort
           if (isExcluded(columnIndex, columnLength)) {
@@ -115,7 +128,10 @@
           }
 
           // change order of the rows
-          toggleOrder(el);
+          toggleOrder({
+            element: element,
+            index: columnIndex
+          });
 
           rows.sort(function(a, b) {
             a = $(a).find('td').eq(columnIndex).text();
@@ -125,15 +141,14 @@
               return;
             }
 
-            console.log(orderBy);
-            return options.sortMethods[method](a, b) * (orderBy === 'asc' ? 1 : -1);
+            return options.sortMethods[method](a, b) * (sortOrder[columnIndex] === sortModes[0] ? 1 : -1);
           });
 
           // re-render the new sorted table
           render();
 
           // call after sort hook
-          options.onAfterSort.call(el, columnIndex+1);
+          options.onAfterSort.call(element, columnIndex+1);
         } else console.error('No suitable sort method found.');
       }
     }
