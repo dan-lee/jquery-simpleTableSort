@@ -1,12 +1,11 @@
 /**
  * Easiest way to sort your tables
  *
- * For further information go to <https://github.com/dan-lee/jquery-easyTableSort>
+ * For further information and documentation go to https://github.com/dan-lee/jquery-easyTableSort
  *
- * @author Daniel Lehr <daniellehr@gmx.de>
- * @internal-coding = utf-8
- * @internal UTF-Chars: ÄÖÜäöüß∆
- * created on 13.11.12 8:38 PM.
+ * Copyright (c) 2012 Daniel Lehr <daniellehr@gmx.de>, agixo <http://agixo.de>
+ * Released under the MIT license.
+ * See MIT-LICENSE.txt
  */
 
 (function($) {
@@ -28,6 +27,7 @@
     };
     options = $.extend(defaultOptions, options || {});
 
+    // main hook
     headCols.on('click', sort);
 
     // http://stackoverflow.com/a/1353711/612202
@@ -47,7 +47,7 @@
         return (parseFloat(a) - parseFloat(b));
       },
       alphabetical: function(a, b) {
-        return (a.toLowerCase() > b.toLowerCase()) ? 1 : -1;
+        return (a.toLowerCase() > b.toLowerCase()) ? -1 : 1;
       },
       date: function(a, b) {
         a = new Date(a);
@@ -158,5 +158,7 @@
         table.append(val);
       });
     }
+
+    return this;
   };
 })(jQuery);
