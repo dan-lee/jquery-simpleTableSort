@@ -48,7 +48,7 @@
       test('sort ascending: ' + sortMethod, function() {
         var expectedData = testToolkit.getExpectedData(testRows, index, sortMethod);
 
-        table.find('th:eq('+index+')').trigger('click');
+        table.find('th').eq(index).trigger('click');
 
         var actualData = [];
         table.find('tbody tr').each(function(a) {
@@ -65,7 +65,7 @@
       test('sort descending: ' + sortMethod, function() {
         var expectedData = testToolkit.getExpectedData(testRows, index, sortMethod).reverse();
 
-        table.find('th:eq('+index+')').trigger('click').trigger('click');
+        table.find('th').eq(index).trigger('click').trigger('click');
 
         var actualData = [];
         table.find('tbody tr').each(function(a) {
@@ -77,26 +77,44 @@
     });
     // end check descending
 
-    module('Options');
+    module('Options', {
+      teardown: function() {
+        table.remove();
+      }
+    });
 
     test('Change prefix', function() {
       var before, after;
       table = createTestTable(testColumns, testRows, 'sortable').simpleTableSort({ prefix: 'sortable' });
 
-      before = table.find('tbody td:eq(0)').text();
+      before = table.find('tbody td').eq(0).text();
       table.find('th:eq(0)').trigger('click');
-      after = table.find('tbody td:eq(0)').text();
+      after = table.find('tbody td').eq(0).text();
 
       notEqual(after, before, 'Sort order has not changed');
+    });
 
-      table.remove();
+    test('Excluded rows', function() {
+      var before = '', after = '';
+      table = createTestTable(testColumns, testRows).simpleTableSort({ excludeSortColumns: [1, 2, -1] });
+
+      before = table.find('tbody td').eq(1).text();
+      table.find('th').eq(1).trigger('click');
+      after = table.find('tbody td').eq(1).text();
+      equal(after, before, 'Sort order has changed, although it was excluded');
+
+      before = table.find('tbody td').eq(2).text();
+      table.find('th').eq(2).trigger('click');
+      after = table.find('tbody td').eq(2).text();
+      equal(after, before, 'Sort order has changed, although it was excluded');
+
+      before = table.find('tbody td').eq(3).text();
+      table.find('th').eq(3).trigger('click');
+      after = table.find('tbody td').eq(3).text();
+      equal(after, before, 'Sort order has changed, although it was excluded');
     });
   });
   </script>
-  <style>
-  .plugin-test {
-  }
-  </style>
 </head>
 <body>
   <div id="qunit"></div>
