@@ -122,7 +122,7 @@
         var method = cn.match(new RegExp(options.prefix + '([^\\s]+)'))[1];
 
         if (options.sortMethods.hasOwnProperty(method)) {
-          options.onBeforeSort.call(element, columnIndex+1);
+          options.onBeforeSort.call(element, columnIndex);
 
           // is the clicked column an excluded one? if so: abort
           if (isExcluded(columnIndex, columnLength)) {
@@ -150,7 +150,7 @@
           render();
 
           // call after sort hook
-          options.onAfterSort.call(element, columnIndex+1);
+          options.onAfterSort.call(element, columnIndex);
         } else console.error('No suitable sort method found.');
       }
     }
