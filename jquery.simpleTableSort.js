@@ -19,7 +19,8 @@
 
     var defaultOptions = {
       prefix: 'sort-',
-      defaultOrder: sortModes[0],
+      order: sortModes[0],
+      autoSort: false,
       sortMethods: {},
       excludeSortColumns: [],
       onBeforeSort: function () {},
@@ -47,7 +48,7 @@
         return (parseFloat(a) - parseFloat(b));
       },
       alphabetical: function(a, b) {
-        return (a.toLowerCase() > b.toLowerCase()) ? -1 : 1;
+        return (a.toLowerCase() > b.toLowerCase()) ? 1 : -1;
       },
       date: function(a, b) {
         a = new Date(a);
@@ -80,7 +81,7 @@
       var newKey, oldKey;
 
       if (typeof currentOrder === 'undefined') {
-        newKey = sortModes.getIndexByValue(options.defaultOrder);
+        newKey = sortModes.getIndexByValue(options.order);
         sortOrder[index] = sortModes[newKey];
         col.element.addClass(options.prefix + sortModes[newKey]);
       } else {
