@@ -17,8 +17,8 @@
     var sortOrder = new Array(headCols.length);
     var sortModes = ['asc', 'desc'];
 
-    var defaultOptions = {
-      prefix: 'sort-',
+    var defaults = {
+      prefix: 'sort',
       order: sortModes[0],
       autoSort: false,
       sortMethods: {},
@@ -26,7 +26,8 @@
       onBeforeSort: function () {},
       onAfterSort: function () {}
     };
-    options = $.extend(defaultOptions, options || {});
+    options = $.extend({}, defaults, options);
+    options.prefix += (options.prefix.slice(-1) !== '-' ? '-' : '');
 
     // main hook
     headCols.on('click', sort);

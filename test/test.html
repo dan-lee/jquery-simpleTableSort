@@ -13,47 +13,49 @@
 
   <script>
   $(function() {
-    var testData;
+    var table;
 
-    module('Test all built-in sort methods', {
+    var testColumns = {
+      alphabetical: 'Name',
+      numeric: 'Age',
+      float: 'Height (in m)',
+      date: 'Reg. date'
+    };
+
+    var testRows = [
+      ['Felix', '37', '1.68', 'Jan 28, 2006'],
+      ['Anton', '77', '1.86', 'Dec 30, 2011'],
+      ['Laith', '79', '1.74', 'Jul 17, 2008'],
+      ['Zaphod', '39', '1.59', 'Jun 23, 2008'],
+      ['Dorian', '28', '2.12', 'Oct 6, 2012']
+    ];
+
+    module('Built-in sort methods', {
       setup: function() {
-        testData = [
-          ['Felix', '37', '1.68', 'Jan 28, 2006'],
-          ['Anton', '77', '1.86', 'Dec 30, 2011'],
-          ['Laith', '79', '1.74', 'Jul 17, 2008'],
-          ['Zaphod', '39', '1.59', 'Jun 23, 2008'],
-          ['Dorian', '28', '2.12', 'Oct 6, 2012']
-        ];
-
-        createTestTable(
-          'table1',
-          { alphabetical: 'Name', numeric: 'Age', float: 'Height (in m)', date: 'Reg. date' },
-          testData
-        ).simpleTableSort({ order: 'asc' });
+        table = createTestTable(testColumns, testRows).simpleTableSort({ order: 'asc' });
       },
 
       teardown: function() {
-        $('#table1').remove();
+        table.remove();
       }
     });
 
     // same order as head columns (for the right sequence)
     var sortTests = ['alphabetical', 'numeric', 'float', 'date'];
-    var table = $('#table1');
 
     // check ascending
     $.each(sortTests, function(index, sortMethod) {
       test('sort ascending: ' + sortMethod, function() {
-        var expectedData = testToolkit.getExpectedData(testData, index, sortMethod);
+        var expectedData = testToolkit.getExpectedData(testRows, index, sortMethod);
 
-        $('#table1 th:eq('+index+')').trigger('click');
+        table.find('th:eq('+index+')').trigger('click');
 
         var actualData = [];
-        $('#table1 tbody tr').each(function(a) {
+        table.find('tbody tr').each(function(a) {
           actualData.push($('td', this).eq(index).text());
         });
 
-        ok(testToolkit.hasSameOrder(expectedData, actualData), 'Wrong sorting order');
+        deepEqual(actualData, expectedData, 'Wrong sorting order');
       });
     });
     // end check ascending
@@ -61,19 +63,33 @@
     // check descending
     $.each(sortTests, function(index, sortMethod) {
       test('sort descending: ' + sortMethod, function() {
-        var expectedData = testToolkit.getExpectedData(testData, index, sortMethod).reverse();
+        var expectedData = testToolkit.getExpectedData(testRows, index, sortMethod).reverse();
 
-        $('#table1 th:eq('+index+')').trigger('click').trigger('click');
+        table.find('th:eq('+index+')').trigger('click').trigger('click');
 
         var actualData = [];
-        $('#table1 tbody tr').each(function(a) {
+        table.find('tbody tr').each(function(a) {
           actualData.push($('td', this).eq(index).text());
         });
 
-        ok(testToolkit.hasSameOrder(expectedData, actualData), 'Wrong sorting order');
+        deepEqual(actualData, expectedData, 'Wrong sorting order');
       });
+    });
     // end check descending
 
+    module('Options');
+
+    test('Change prefix', function() {
+      var before, after;
+      table = createTestTable(testColumns, testRows, 'sortable').simpleTableSort({ prefix: 'sortable' });
+
+      before = table.find('tbody td:eq(0)').text();
+      table.find('th:eq(0)').trigger('click');
+      after = table.find('tbody td:eq(0)').text();
+
+      notEqual(after, before, 'Sort order has not changed');
+
+      table.remove();
     });
   });
   </script>

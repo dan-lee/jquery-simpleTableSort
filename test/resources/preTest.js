@@ -1,8 +1,8 @@
 // just throw some table together
-function createTestTable(id, cols, rows, prefix) {
+function createTestTable(cols, rows, prefix) {
   prefix = prefix || 'sort';
 
-  var table = '<table id="'+id+'" class="plugin-test">';
+  var table = '<table id="testTable" class="plugin-test">';
   table += '<thead>';
   table += '<tr>';
   var dataLen = 0;
@@ -28,21 +28,10 @@ function createTestTable(id, cols, rows, prefix) {
   table += '</table>';
 
   $('body').after(table);
-  return $('#'+id);
+  return $('#testTable');
 }
 
 var testToolkit = {
-  hasSameOrder: function(expected, actual) {
-    var result = true;
-    $.each(expected, function(i, val) {
-      if (val !== actual[i]) {
-        result = false;
-        return false;
-      }
-    });
-    return result;
-  },
-
   getExpectedData: function(testData, column, orderBy) {
     if (!this.sortMethods[orderBy]) {
       throw "Sort method not found";
