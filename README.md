@@ -2,6 +2,7 @@
 
 
 This is a simple plugin for jQuery, which adds the capability of sorting rows of your tables by your own rules.  
+
 [**Click here to see a demo**](http://agixo.de/dev/jquery-simpleTableSort/demo.html)
 
 ### Basic usage
