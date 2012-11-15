@@ -10,14 +10,14 @@
   $(function() {
     $('#bigTable').simpleTableSort({
       order: 'asc',
-      excludeSortColumns: [2],
+      excludeSortColumns: [1],
       onBeforeSort: function(index) {
-        if (index == 2) {
+        if (index == 1) {
           alert('This field was excluded from sorting.');
         }
       },
       onAfterSort: function(index) {
-        if (index == 2) {
+        if (index == 1) {
           alert('Should never be called');
         } else {
           console.log('Table was sorted.');
