@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>simple table sort - a jQuery plugin — Test</title>
+
+  <link href="resources/qunit-1.10.0.css" rel="stylesheet">
+
+  <script src="resources/qunit-1.10.0.js"></script>
+  <script src="../lib/jquery.js"></script>
+  <script src="../jquery.simpleTableSort.js"></script>
+  <script src="resources/preTest.js"></script>
+
+  <script>
+  $(function() {
+    var testData;
+
+    module('Test all built-in sort methods', {
+      setup: function() {
+        testData = [
+          ['Felix', '37', '1.68', 'Jan 28, 2006'],
+          ['Anton', '77', '1.86', 'Dec 30, 2011'],
+          ['Laith', '79', '1.74', 'Jul 17, 2008'],
+          ['Zaphod', '39', '1.59', 'Jun 23, 2008'],
+          ['Dorian', '28', '2.12', 'Oct 6, 2012']
+        ];
+
+        createTestTable(
+          'table1',
+          { alphabetical: 'Name', numeric: 'Age', float: 'Height (in m)', date: 'Reg. date' },
+          testData
+        ).simpleTableSort({ order: 'asc' });
+      },
+
+      teardown: function() {
+        $('#table1').remove();
+      }
+    });
+
+    // same order as head columns (for the right sequence)
+    var sortTests = ['alphabetical', 'numeric', 'float', 'date'];
+    var table = $('#table1');
+
+    // check ascending
+    $.each(sortTests, function(index, sortMethod) {
+      test('sort ascending: ' + sortMethod, function() {
+        var expectedData = testToolkit.getExpectedData(testData, index, sortMethod);
+
+        $('#table1 th:eq('+index+')').trigger('click');
+
+        var actualData = [];
+        $('#table1 tbody tr').each(function(a) {
+          actualData.push($('td', this).eq(index).text());
+        });
+
+        ok(testToolkit.hasSameOrder(expectedData, actualData), 'Wrong sorting order');
+      });
+    });
+    // end check ascending
+
+    // check descending
+    $.each(sortTests, function(index, sortMethod) {
+      test('sort descending: ' + sortMethod, function() {
+        var expectedData = testToolkit.getExpectedData(testData, index, sortMethod).reverse();
+
+        $('#table1 th:eq('+index+')').trigger('click').trigger('click');
+
+        var actualData = [];
+        $('#table1 tbody tr').each(function(a) {
+          actualData.push($('td', this).eq(index).text());
+        });
+
+        ok(testToolkit.hasSameOrder(expectedData, actualData), 'Wrong sorting order');
+      });
+    // end check descending
+
+    });
+  });
+  </script>
+  <style>
+  .plugin-test {
+  }
+  </style>
+</head>
+<body>
+  <div id="qunit"></div>
+</body>
+</html>
