@@ -2,14 +2,14 @@
 <html>
 <head>
   <title>jQuery - table sorting the easy way</title>
-  <script src="//code.jquery.com/jquery-1.8.2.min.js"></script>
+  <script src="lib/jquery.js"></script>
   <script src="jquery.simpleTableSort.js"></script>
   <link href="style.css" rel="stylesheet">
 
   <script>
   $(function() {
     $('#bigTable').simpleTableSort({
-      defaultOrder: 'asc',
+      order: 'asc',
       excludeSortColumns: [2],
       onBeforeSort: function(index) {
         if (index == 2) {
