@@ -12,9 +12,9 @@
   $.fn.simpleTableSort = function(options) {
     var table = $(this);
     var rows = table.find('tbody').children();
-    var headCols = table.find('thead').find('th');
+    var cols = table.find('thead').find('th');
 
-    var sortOrder = new Array(headCols.length);
+    var sortOrder = new Array(cols.length);
     var sortModes = ['asc', 'desc'];
 
     var defaults = {
@@ -30,7 +30,7 @@
     options.prefix += (options.prefix.slice(-1) !== '-' ? '-' : '');
 
     // main hook
-    headCols.on('click', sort);
+    cols.on('click', sort);
 
     // http://stackoverflow.com/a/1353711/612202
     function isDate(d) {
@@ -76,28 +76,40 @@
       };
     }
 
-    function toggleOrder(col) {
-      var index = col.index;
-      var currentOrder = sortOrder[index];
+    function sortBy(rows, method, columnIndex) {
+      rows.sort(function(a, b) {
+        a = $(a).find('td').eq(columnIndex).text();
+        b = $(b).find('td').eq(columnIndex).text();
+
+        if (!a || !b) {
+          return 0;
+        }
+
+        return options.sortMethods[method](a, b) * (sortOrder[columnIndex] === sortModes[0] ? 1 : -1);
+      });
+    }
+
+    function toggleOrder(element, columnIndex) {
+      var currentOrder = sortOrder[columnIndex];
       var newKey, oldKey;
 
       if (typeof currentOrder === 'undefined') {
         newKey = sortModes.getIndexByValue(options.order);
-        sortOrder[index] = sortModes[newKey];
-        col.element.addClass(options.prefix + sortModes[newKey]);
+        sortOrder[columnIndex] = sortModes[newKey];
+        element.addClass(options.prefix + sortModes[newKey]);
       } else {
         oldKey = sortModes.getIndexByValue(currentOrder);
         // little trick for toggling of two values:
         // 1. cast to bool, 2. negate the value, 3. cast back to int
         newKey = +!oldKey;
-        sortOrder[index] = sortModes[newKey];
+        sortOrder[columnIndex] = sortModes[newKey];
 
-        col.element.removeClass(options.prefix + sortModes[oldKey]).addClass(options.prefix + sortModes[newKey]);
+        element.removeClass(options.prefix + sortModes[oldKey]).addClass(options.prefix + sortModes[newKey]);
       }
     }
 
     function isExcluded(current) {
-      var len = headCols.length;
+      var len = cols.length;
 
       // is the clicked column an excluded one? if so: abort
       var abort = false;
@@ -113,46 +125,35 @@
 
     function sort() {
       var element = $(this);
-      var columnLength = headCols.length;
-      var columnIndex = headCols.index(element);
+      var columnIndex = cols.index(element);
 
-      var cn = this.className;
       // check if there's a class starting with the given prefix
-      if (new RegExp('\\b' + options.prefix).test(cn)) {
-        var method = cn.match(new RegExp(options.prefix + '([^\\s]+)'))[1];
+      if (new RegExp('\\b' + options.prefix).test(this.className)) {
+        var method = this.className.match(new RegExp(options.prefix + '([^\\s]+)'))[1];
 
         if (options.sortMethods.hasOwnProperty(method)) {
+          // is the clicked column an excluded one? if so: abort
+          if (isExcluded(columnIndex)) {
+            return false;
+          }
           options.onBeforeSort.call(element, columnIndex);
 
-          // is the clicked column an excluded one? if so: abort
-          if (isExcluded(columnIndex, columnLength)) {
-            return;
-          }
-
           // change order of the rows
-          toggleOrder({
-            element: element,
-            index: columnIndex
-          });
+          toggleOrder(element, columnIndex);
 
-          rows.sort(function(a, b) {
-            a = $(a).find('td').eq(columnIndex).text();
-            b = $(b).find('td').eq(columnIndex).text();
-
-            if (!a || !b) {
-              return;
-            }
-
-            return options.sortMethods[method](a, b) * (sortOrder[columnIndex] === sortModes[0] ? 1 : -1);
-          });
+          // sort by
+          sortBy(rows, method, columnIndex);
 
           // re-render the new sorted table
           render();
 
           // call after sort hook
           options.onAfterSort.call(element, columnIndex);
+
+          return true;
         } else console.error('No suitable sort method found.');
       }
+      return false;
     }
 
     function render() {
