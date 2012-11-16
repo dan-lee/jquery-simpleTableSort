@@ -9,11 +9,11 @@
   <script src="resources/qunit-1.10.0.js"></script>
   <script src="../lib/jquery.js"></script>
   <script src="../jquery.simpleTableSort.js"></script>
-  <script src="resources/preTest.js"></script>
+  <script src="resources/prerequisites.js"></script>
 
   <script>
   $(function() {
-    var table;
+    var table, i;
 
     var testColumns = {
       alphabetical: 'Name',
@@ -34,48 +34,60 @@
       setup: function() {
         table = createTestTable(testColumns, testRows).simpleTableSort({ order: 'asc' });
       },
-
       teardown: function() {
         table.remove();
       }
     });
 
-    // same order as head columns (for the right sequence)
-    var sortTests = ['alphabetical', 'numeric', 'float', 'date'];
+    // pre-sorted values
+    var expectedData = {
+      alphabetic: ['Anton', 'Dorian', 'Felix', 'Laith', 'Zaphod'],
+      numeric: ['28', '37', '39', '77', '79'],
+      float: ['1.59', '1.68', '1.74', '1.86', '2.12'],
+      date: ['Jan 28, 2006', 'Jun 23, 2008', 'Jul 17, 2008', 'Dec 30, 2011', 'Oct 6, 2012']
+    };
 
     // check ascending
-    $.each(sortTests, function(index, sortMethod) {
-      test('sort ascending: ' + sortMethod, function() {
-        var expectedData = testToolkit.getExpectedData(testRows, index, sortMethod);
-
+    function testAscending(sortMethod, expected, index) {
+      test('sort ascending: '+sortMethod, function() {
         table.find('th').eq(index).trigger('click');
 
-        var actualData = [];
+        var actual = [];
         table.find('tbody tr').each(function(a) {
-          actualData.push($('td', this).eq(index).text());
+          actual.push($('td', this).eq(index).text());
         });
 
-        deepEqual(actualData, expectedData, 'Wrong sorting order');
+        deepEqual(actual, expected, 'Wrong sorting order');
       });
-    });
+    }
     // end check ascending
 
     // check descending
-    $.each(sortTests, function(index, sortMethod) {
-      test('sort descending: ' + sortMethod, function() {
-        var expectedData = testToolkit.getExpectedData(testRows, index, sortMethod).reverse();
-
+    function testDescending(sortMethod, expected, index) {
+      console.log(this);
+      test('sort descending: '+sortMethod, function() {
         table.find('th').eq(index).trigger('click').trigger('click');
 
-        var actualData = [];
+        var actual = [];
         table.find('tbody tr').each(function(a) {
-          actualData.push($('td', this).eq(index).text());
+          actual.push($('td', this).eq(index).text());
         });
 
-        deepEqual(actualData, expectedData, 'Wrong sorting order');
+        expected.reverse();
+        deepEqual(actual, expected, 'Wrong sorting order');
       });
-    });
+    }
     // end check descending
+
+    i = 0;
+    $.each(expectedData, function(sortMethod, expected) {
+      testAscending(sortMethod, expected, i++);
+    });
+
+    i = 0;
+    $.each(expectedData, function(sortMethod, expected) {
+      testDescending(sortMethod, expected, i++);
+    });
 
     module('Options');
 
