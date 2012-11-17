@@ -26,7 +26,8 @@
     order: 'asc',
 
     /**
-     * Do you want your table entries sorted initially (after creating it) then set this to value true
+     * Adds the possibility to sort the table entries when the table is created.
+     * Accepts index values of table head column (zero-based).
      */
     autoSort: null,
 
@@ -84,36 +85,37 @@
     options: {},
 
     init: function(element, options) {
-      options = $.extend(true, {}, defaults, options);
+      this.options = $.extend(true, {}, defaults, options);
 
       this.table = element;
       this.$table = $(element);
+
+      if (this.options.fixTableHead === true) {
+        this.fixTableHead();
+      }
+
       this.rows = this.$table.find('tbody').children();
       this.cols = this.$table.find('thead').find('th');
 
       this.sortOrder = new Array(this.cols.length);
       this.sortModes = ['asc', 'desc'];
 
+      var self = this;
       this.cols.on('click', function() {
-        priv.sort(this);
+        self.sort(this);
       });
 
-      if (options.autoSort !== null) {
-        this.cols.eq(options.autoSort).trigger('click');
-      }
+      this.options.prefix += (this.options.prefix.slice(-1) !== '-' ? '-' : '');
 
-      if (options.fixTableHead) {
-        this.fixTableHead();
+      if (this.options.autoSort !== null) {
+        this.cols.eq(parseInt(this.options.autoSort)).trigger('click');
       }
-      options.prefix += (options.prefix.slice(-1) !== '-' ? '-' : '');
-
-      priv.options = options;
     },
 
     fixTableHead: function() {
       var thead = $('<thead></thead>');
-      var child = priv.$table.find('tr').first().remove();
-      priv.$table.prepend(thead.append(child));
+      var child = this.$table.find('tr').first().remove();
+      this.$table.prepend(thead.append(child));
     },
 
     toggleOrder: function(element, columnIndex) {
