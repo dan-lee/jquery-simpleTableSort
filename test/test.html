@@ -50,12 +50,8 @@
     // check ascending
     function testAscending(sortMethod, expected, index) {
       test('sort ascending: '+sortMethod, function() {
-        table.find('th').eq(index).trigger('click');
-
-        var actual = [];
-        table.find('tbody tr').each(function(a) {
-          actual.push($('td', this).eq(index).text());
-        });
+        table.clickHeadCol(index);
+        var actual = table.collectActualData(index);
 
         deepEqual(actual, expected, 'Wrong sorting order');
       });
@@ -64,17 +60,14 @@
 
     // check descending
     function testDescending(sortMethod, expected, index) {
-      console.log(this);
       test('sort descending: '+sortMethod, function() {
-        table.find('th').eq(index).trigger('click').trigger('click');
+        table.clickHeadCol(index, 2);
+        var actual = table.collectActualData(index);
 
-        var actual = [];
-        table.find('tbody tr').each(function(a) {
-          actual.push($('td', this).eq(index).text());
-        });
+        // slice() clones the array, we don't want referential reversing. the test data would be destroyed.
+        var expectedReverse = expected.slice().reverse();
 
-        expected.reverse();
-        deepEqual(actual, expected, 'Wrong sorting order');
+        deepEqual(actual, expectedReverse, 'Wrong sorting order');
       });
     }
     // end check descending
@@ -91,12 +84,12 @@
 
     module('Options');
 
-    test('Change prefix', function() {
+    test('Set css class prefix', function() {
       var before, after;
       table = createTestTable(testColumns, testRows, 'sortable').simpleTableSort({ prefix: 'sortable' });
 
       before = table.find('tbody td').eq(0).text();
-      table.find('th').eq(0).trigger('click');
+      table.clickHeadCol(0);
       after = table.find('tbody td').eq(0).text();
 
       notEqual(after, before, 'Sort order has not changed');
@@ -115,22 +108,80 @@
       table.remove();
     });
 
-    test('Excluded rows', function() {
+    test('Set initial sort order to descending', function() {
+      table = createTestTable(testColumns, testRows).simpleTableSort({ order: 'desc' });
+      table.clickHeadCol(0);
+
+      var actual = table.collectActualData(0);
+      var expectedReverse = expectedData.alphabetic.slice().reverse();
+
+      deepEqual(actual, expectedReverse, 'Descending order was not set initially');
+
+      table.remove();
+    });
+
+    test('Adding own sort methods', function() {
+      table = createTestTable({
+        ownDate: 'Special date format',
+        ownPriority: 'Priority'
+      }, [
+        ['12_08_2009', 'TA-6'],
+        ['13_01_2006', 'TA-3'],
+        ['12_11_2010', 'TA-2'],
+        ['15_06_2007', 'TA-1'],
+        ['01_05_2010', 'TA-2']
+      ]);
+      table.simpleTableSort({
+        sortMethods: {
+          ownDate: function(a, b) {
+            a = a.split('_');
+            a = a[1]+'-'+a[0]+'-'+a[2];
+            b = b.split('_');
+            b = b[1]+'-'+b[0]+'-'+b[2];
+
+            a = new Date(a);
+            b = new Date(b);
+
+            return (a > b) ? 1 : -1;
+          },
+          ownPriority: function(a, b) {
+            a = a.split('-')[1];
+            b = b.split('-')[1];
+
+            return (a > b) ? 1 : -1;
+          }
+        }
+      });
+
+      var expected = {
+        ownDate: ['13_01_2006', '15_06_2007', '12_08_2009', '01_05_2010', '12_11_2010'],
+        ownPriority: ['TA-1', 'TA-2', 'TA-2', 'TA-3', 'TA-6']
+      };
+      table.clickHeadCol(0);
+      deepEqual(table.collectActualData(0), expected.ownDate, 'Own date sort method failed');
+
+      table.clickHeadCol(1);
+      deepEqual(table.collectActualData(1), expected.ownPriority, 'Own date sort method failed');
+
+      table.remove();
+    });
+
+    test('Set excluded rows', function() {
       var before = '', after = '';
       table = createTestTable(testColumns, testRows).simpleTableSort({ excludeSortColumns: [1, 2, -1] });
 
       before = table.find('tbody td').eq(1).text();
-      table.find('th').eq(1).trigger('click');
+      table.clickHeadCol(1);
       after = table.find('tbody td').eq(1).text();
       equal(after, before, 'Sort order has changed, although it was excluded');
 
       before = table.find('tbody td').eq(2).text();
-      table.find('th').eq(2).trigger('click');
+      table.clickHeadCol(2);
       after = table.find('tbody td').eq(2).text();
       equal(after, before, 'Sort order has changed, although it was excluded');
 
       before = table.find('tbody td').eq(3).text();
-      table.find('th').eq(3).trigger('click');
+      table.clickHeadCol(3);
       after = table.find('tbody td').eq(3).text();
       equal(after, before, 'Sort order has changed, although it was excluded');
 

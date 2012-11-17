@@ -1,8 +1,11 @@
-// just throw some table together
+var i = 0;
+
 function createTestTable(cols, rows, prefix) {
   prefix = prefix || 'sort';
 
-  var table = '<table id="testTable" class="plugin-test">';
+  var id = 'testTable-'+(i++);
+
+  var table = '<table id="'+id+'" class="plugin-test">';
   table += '<thead>';
   table += '<tr>';
   var dataLen = 0;
@@ -28,5 +31,22 @@ function createTestTable(cols, rows, prefix) {
   table += '</table>';
 
   $('body').after(table);
-  return $('#testTable');
+  return $('#'+id);
 }
+
+$.fn.clickHeadCol = function(index, times) {
+  times = times || 1;
+  var col = this.find('th').eq(index);
+  for (var i = 0; i < times; i++) {
+    col.trigger('click');
+  }
+};
+
+$.fn.collectActualData = function(index) {
+  var actual = [];
+  this.find('tbody tr').each(function() {
+    actual.push($('td', this).eq(index).text());
+  });
+
+  return actual;
+};
