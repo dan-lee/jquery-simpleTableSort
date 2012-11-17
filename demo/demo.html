@@ -11,18 +11,13 @@
     $('#bigTable').simpleTableSort({
       order: 'asc',
       excludeSortColumns: [1],
+
       onBeforeSort: function(index) {
-        if (index == 1) {
-          alert('This field was excluded from sorting.');
-        }
       },
+
       onAfterSort: function(index) {
-        if (index == 1) {
-          alert('Should never be called');
-        } else {
-          console.log('Table was sorted.');
-        }
       },
+
       sortMethods: {
         customMail: function(a, b) {
           a = a.split('@')[1];
@@ -38,11 +33,13 @@
 <body>
 <h2>Customer list</h2>
 
+<p>Column "Street" is excluded from sort via option <code>excludeSortColumns</code></p>
+
 <table cellspacing="0" cellpadding="0" id="bigTable">
   <thead>
     <tr>
       <th class="sort-alphabetical">Name</th>
-      <th class="sort-alphabetical" title="This field is not sorted. Option [excludeSortColumns] is set.">Street</th>
+      <th title="This field is not sorted. Option [excludeSortColumns] is set.">Street</th>
       <th class="sort-numeric">Postal</th>
       <th class="sort-alphabetical">City</th>
       <th class="sort-alphabetical">Country</th>

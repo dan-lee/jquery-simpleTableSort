@@ -44,3 +44,8 @@ tr:first-child td {
 tr:last-child td {
   border-bottom: 0;
 }
+
+code {
+  background: #ebebeb;
+  padding: 0px 3px;
+}
