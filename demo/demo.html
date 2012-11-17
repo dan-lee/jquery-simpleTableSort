@@ -10,6 +10,7 @@
   $(function() {
     $('#bigTable').simpleTableSort({
       order: 'asc',
+      autoSort: 0,
       excludeSortColumns: [1],
 
       onBeforeSort: function(index) {
@@ -39,7 +40,7 @@
   <thead>
     <tr>
       <th class="sort-alphabetical">Name</th>
-      <th title="This field is not sorted. Option [excludeSortColumns] is set.">Street</th>
+      <th class="sort-alphabetical" title="This field is not sorted. Option [excludeSortColumns] is set.">Street</th>
       <th class="sort-numeric">Postal</th>
       <th class="sort-alphabetical">City</th>
       <th class="sort-alphabetical">Country</th>
