@@ -36,6 +36,21 @@
 
 <p>Column "Street" is excluded from sort via option <code>excludeSortColumns</code></p>
 
+<p>Column "Mail address" is custom sorted by the domain name. This is achieved with a custom sort method <code>customMail</code>:
+<pre>
+$('#bigTable').simpleTableSort({
+  sortMethods: {
+    customMail: function(a, b) {
+      a = a.split('@')[1];
+      b = b.split('@')[1];
+
+      return (a > b) ? 1 : -1;
+    }
+  }
+});
+</pre>
+</p>
+
 <table cellspacing="0" cellpadding="0" id="bigTable">
   <thead>
     <tr>

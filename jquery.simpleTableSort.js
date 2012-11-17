@@ -32,7 +32,20 @@
     autoSort: null,
 
     /**
-     * You can add your own sort methods here
+     * You can add your own sort methods here.
+     *
+     * Example: Change "dd-mm-yyy" formatted date to JavaScript compatible "mm-dd-yyyy":
+     * sortMethods: {
+     *   myDate: function(a, b) {
+     *     a = a.split('.');
+     *     a = a[1]+'.'+a[0]+'.'+a[2];
+     *
+     *     b = b.split('.');
+     *     b = b[1]+'.'+b[0]+'.'+b[2];
+     *
+     *     return new Date(a) > new Date(b) ? 1 : -1;
+     *   }
+     * }
      */
     sortMethods: {
       numeric: function(a, b) {
@@ -62,7 +75,10 @@
     fixTableHead: false,
 
     /**
-     * If you want exclude head columns
+     * Table head columns can be excluded from to be sorted by adding the index.
+     *
+     * Example which excludes the second row (zero-based):
+     * excludeSortColumns: [ 1 ]
      */
     excludeSortColumns: [],
 
@@ -82,8 +98,6 @@
   }
 
   var priv = {
-    options: {},
-
     init: function(element, options) {
       this.options = $.extend(true, {}, defaults, options);
 
@@ -91,6 +105,7 @@
       this.$table = $(element);
 
       if (this.options.fixTableHead === true) {
+        // fix table head structure right away before trying to find the rows and cols
         this.fixTableHead();
       }
 
@@ -100,13 +115,16 @@
       this.sortOrder = new Array(this.cols.length);
       this.sortModes = ['asc', 'desc'];
 
+
       var self = this;
       this.cols.on('click', function() {
+        // call this in a closure to maintain the scope of the 'sort' method
         self.sort(this);
       });
 
       this.options.prefix += (this.options.prefix.slice(-1) !== '-' ? '-' : '');
 
+      // call this after all options are processed to ensure that sorting is possible
       if (this.options.autoSort !== null) {
         this.cols.eq(parseInt(this.options.autoSort)).trigger('click');
       }
@@ -122,13 +140,17 @@
       var currentOrder = this.sortOrder[columnIndex];
       var newKey, oldKey;
 
+      // this case occurs when this column wasn't sorted before
       if (typeof currentOrder === 'undefined') {
+
+        // find out the index of the 'toggle array' by the default sort order
         newKey = this.helper.getIndexByValue(this.sortModes, this.options.order);
+        // set the order initially, so on the next sorting process the order can be toggled
         this.sortOrder[columnIndex] = this.sortModes[newKey];
         $(element).addClass(this.options.prefix + this.sortModes[newKey]);
       } else {
         oldKey = this.helper.getIndexByValue(this.sortModes, currentOrder);
-        // little trick for toggling of two values:
+        // little trick for toggling two values in an array (there may be only two values in this array):
         // 1. cast to bool, 2. negate the value, 3. cast back to int
         newKey = +!oldKey;
         this.sortOrder[columnIndex] = this.sortModes[newKey];
@@ -153,7 +175,9 @@
     },
 
     sortBy: function(method, columnIndex) {
+      var self = this;
       this.rows.sort(function(a, b) {
+        // take the text of the rows for the comparison
         a = $(a).find('td').eq(columnIndex).text();
         b = $(b).find('td').eq(columnIndex).text();
 
@@ -161,7 +185,7 @@
           return 0;
         }
 
-        return priv.options.sortMethods[method](a, b) * (priv.sortOrder[columnIndex] === priv.sortModes[0] ? 1 : -1);
+        return self.options.sortMethods[method](a, b) * (self.sortOrder[columnIndex] === self.sortModes[0] ? 1 : -1);
       });
     },
 
