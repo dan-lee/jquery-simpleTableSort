@@ -18,16 +18,60 @@
     var sortModes = ['asc', 'desc'];
 
     var defaults = {
+      /**
+       * Changes the prefix of the used css classes in the plugin.
+       * These classes will be appended to the head columns to determine which state they were.
+       * If the prefix 'sort' is already used in your project you can change it here
+       */
       prefix: 'sort',
-      order: sortModes[0],
-      autoSort: false,
+
+      /**
+       * The sort order in which your table entries will be sorted first.
+       * Possible entries:
+       *  - asc: Ascending order (a-z, 0-9, ...)
+       *  - desc: Descending order (z-a, 9-0, ...)
+       */
+      order: 'asc',
+
+      /**
+       * Do you want your table entries sorted initially (after creating it) then set this to value true
+       */
+      autoSort: null,
+
+      /**
+       * You can add your own sort methods here
+       */
       sortMethods: {},
+
+      /**
+       * If you have no control over the table structure and it lacks of a table head, then set this value to true
+       * and the first row of your table will be treatened as table head column
+       */
+      fixTableHead: false,
+
+      /**
+       * If you want exclude head columns
+       */
       excludeSortColumns: [],
       onBeforeSort: function () {},
       onAfterSort: function () {}
     };
     options = $.extend({}, defaults, options);
     options.prefix += (options.prefix.slice(-1) !== '-' ? '-' : '');
+
+
+
+    function init() {
+
+    }
+
+    if (options.fixTableHead) {
+      fixTableHead();
+    }
+
+    if (options.autoSort !== null) {
+      cols.eq(options.autoSort).trigger('click');
+    }
 
     // main hook
     cols.on('click', sort);
@@ -74,6 +118,12 @@
         });
         return result;
       };
+    }
+
+    function fixTableHead() {
+      var thead = $('<thead></thead>');
+      var child = table.find('tr').first().remove();
+      table.prepend(thead.append(child));
     }
 
     function sortBy(rows, method, columnIndex) {
@@ -138,13 +188,8 @@
           }
           options.onBeforeSort.call(element, columnIndex);
 
-          // change order of the rows
           toggleOrder(element, columnIndex);
-
-          // sort by
           sortBy(rows, method, columnIndex);
-
-          // re-render the new sorted table
           render();
 
           // call after sort hook
