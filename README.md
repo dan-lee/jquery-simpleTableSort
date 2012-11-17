@@ -17,7 +17,7 @@ $(function() {
 You have to adjust your table slightly, so that the plugin knows how to sort your rows:
 
 ```html
-<table id="someTable">
+<table id="myTable">
  <thead>
   <tr>
    <th class="sort-numeric">Id</th>
