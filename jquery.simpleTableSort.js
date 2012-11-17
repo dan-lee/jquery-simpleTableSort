@@ -94,7 +94,9 @@
       this.sortOrder = new Array(this.cols.length);
       this.sortModes = ['asc', 'desc'];
 
-      this.cols.on('click', this.sort);
+      this.cols.on('click', function() {
+        priv.sort(this);
+      });
 
       if (options.autoSort !== null) {
         this.cols.eq(options.autoSort).trigger('click');
@@ -121,7 +123,7 @@
       if (typeof currentOrder === 'undefined') {
         newKey = this.helper.getIndexByValue(this.sortModes, this.options.order);
         this.sortOrder[columnIndex] = this.sortModes[newKey];
-        element.addClass(this.options.prefix + this.sortModes[newKey]);
+        $(element).addClass(this.options.prefix + this.sortModes[newKey]);
       } else {
         oldKey = this.helper.getIndexByValue(this.sortModes, currentOrder);
         // little trick for toggling of two values:
@@ -129,7 +131,7 @@
         newKey = +!oldKey;
         this.sortOrder[columnIndex] = this.sortModes[newKey];
 
-        element.removeClass(this.options.prefix + this.sortModes[oldKey]).addClass(this.options.prefix + this.sortModes[newKey]);
+        $(element).removeClass(this.options.prefix + this.sortModes[oldKey]).addClass(this.options.prefix + this.sortModes[newKey]);
       }
     },
 
@@ -161,27 +163,26 @@
       });
     },
 
-    sort: function() {
-      var element = $(this);
-      var columnIndex = priv.cols.index(element);
+    sort: function(element) {
+      var columnIndex = this.cols.index(element);
 
       // check if there's a class starting with the given prefix
-      if (new RegExp('\\b' + priv.options.prefix).test(this.className)) {
-        var method = this.className.match(new RegExp(priv.options.prefix + '([^\\s]+)'))[1];
+      if (new RegExp('\\b' + this.options.prefix).test(element.className)) {
+        var method = element.className.match(new RegExp(this.options.prefix + '([^\\s]+)'))[1];
 
-        if (priv.options.sortMethods.hasOwnProperty(method)) {
+        if (this.options.sortMethods.hasOwnProperty(method)) {
           // is the clicked column an excluded one? if so: abort
-          if (priv.isExcluded(columnIndex)) {
+          if (this.isExcluded(columnIndex)) {
             return false;
           }
-          priv.options.onBeforeSort.call(element, columnIndex);
+          this.options.onBeforeSort.call($(element), columnIndex);
 
-          priv.toggleOrder(element, columnIndex);
-          priv.sortBy(method, columnIndex);
-          priv.render();
+          this.toggleOrder(element, columnIndex);
+          this.sortBy(method, columnIndex);
+          this.render();
 
           // call after sort hook
-          priv.options.onAfterSort.call(element, columnIndex);
+          this.options.onAfterSort.call($(element), columnIndex);
 
           return true;
         } else console.error('No suitable sort method found.');
