@@ -26,6 +26,14 @@
     order: 'asc',
 
     /**
+     * If the table is dynamic, meaning the table gets updated by AJAX or something else, this setting should be set to true.
+     * Otherwise the initial table data is restored.
+     *
+     * This is for performance reason: If it's a static table the rows don't have to be reprocessed every sort change.
+     */
+    dynamic: false,
+
+    /**
      * Adds the possibility to sort the table entries when the table is created.
      * Accepts index values of table head column (zero-based).
      */
@@ -110,11 +118,11 @@
       }
 
       this.rows = this.$table.find('tbody').children();
+      this.rowLength = this.rows.length;
       this.cols = this.$table.find('thead').find('th');
 
       this.sortOrder = new Array(this.cols.length);
       this.sortModes = ['asc', 'desc'];
-
 
       var self = this;
       this.cols.on('click', function() {
@@ -195,8 +203,22 @@
       });
     },
 
+    updateRows: function() {
+      var newChildren = this.$table.find('tbody').children(),
+          newRowLength = newChildren.length;
+
+      if (newRowLength != this.rowLength) {
+        this.rows = newChildren;
+        this.rowLength = newRowLength;
+      }
+    },
+
     sort: function(element) {
       var columnIndex = this.cols.index(element);
+
+      if (this.options.dynamic === true) {
+        this.updateRows();
+      }
 
       // check if there's a class starting with the given prefix
       if (new RegExp('\\b' + this.options.prefix).test(element.className)) {

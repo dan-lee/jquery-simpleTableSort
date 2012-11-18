@@ -11,6 +11,7 @@
     $('#bigTable').simpleTableSort({
       order: 'asc',
       excludeSortColumns: [1],
+      dynamic: true,
 
       onBeforeSort: function(index) {
         $('#sort-loading').show();
@@ -41,17 +42,21 @@
         pre.text(pre.text() == '+' ? '-' : '+');
       });
     });
+
+    $('#delete-row').on('click', function() {
+      $('#bigTable').find('tbody').children().first().eq(0).remove();
+    });
   });
   </script>
 </head>
 <body>
 <h2>Customer list</h2>
 
-
 <div id="sort-loading">please wait...</div>
 
 <span id="desc-link"><span class="pre">+</span> Description</span>
-<article id="desc">
+
+<div id="desc">
 <p>Column "Street" is excluded from sort via option <code>excludeSortColumns</code>:</p>
 <pre>
 $('#bigTable').simpleTableSort({
@@ -77,7 +82,11 @@ $('#bigTable').simpleTableSort({
 <pre>
 &lt;th class="sort-customMail"&gt;Mail address&lt;th&gt;
 </pre>
-</article>
+</div>
+
+<br>
+<br>
+<button id="delete-row">Remove first row on top</button>
 
 <article id="example">
 <table cellspacing="0" cellpadding="0" id="bigTable">
