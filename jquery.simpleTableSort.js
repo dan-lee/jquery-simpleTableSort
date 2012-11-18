@@ -124,6 +124,12 @@
 
       this.options.prefix += (this.options.prefix.slice(-1) !== '-' ? '-' : '');
 
+      $.each(this.options.excludeSortColumns, function(i, val) {
+        var col = self.cols.eq(val);
+        var newClass = col.prop('class').replace(new RegExp('\\s?\\b'+self.options.prefix+'[^\\s]+\\s?', 'g'), '');
+        col.prop('class', newClass).addClass('sort-disabled');
+      });
+
       // call this after all options are processed to ensure that sorting is possible
       if (this.options.autoSort !== null) {
         this.cols.eq(parseInt(this.options.autoSort)).trigger('click');

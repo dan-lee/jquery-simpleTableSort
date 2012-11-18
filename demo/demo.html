@@ -10,13 +10,19 @@
   $(function() {
     $('#bigTable').simpleTableSort({
       order: 'asc',
-      autoSort: 0,
       excludeSortColumns: [1],
 
       onBeforeSort: function(index) {
+        $('#sort-loading').show();
       },
 
       onAfterSort: function(index) {
+        $('#sort-loading').animate({ opacity: 0 }, 100, function() {
+          $(this).css({
+            display: 'none',
+            opacity: .5
+          });
+        });
       },
 
       sortMethods: {
@@ -24,9 +30,16 @@
           a = a.split('@')[1];
           b = b.split('@')[1];
 
-          return (a > b) ? 1 : -1;
+          return a > b ? 1 : -1;
         }
       }
+    });
+
+    $('#desc-link').on('click', function() {
+      var pre = $('#desc-link').find('.pre');
+      $('#desc').slideToggle(function() {
+        pre.text(pre.text() == '+' ? '-' : '+');
+      });
     });
   });
   </script>
@@ -34,9 +47,20 @@
 <body>
 <h2>Customer list</h2>
 
-<p>Column "Street" is excluded from sort via option <code>excludeSortColumns</code></p>
 
-<p>Column "Mail address" is custom sorted by the domain name. This is achieved with a custom sort method <code>customMail</code>:
+<div id="sort-loading">please wait...</div>
+
+<span id="desc-link"><span class="pre">+</span> Description</span>
+<article id="desc">
+<p>Column "Street" is excluded from sort via option <code>excludeSortColumns</code>:</p>
+<pre>
+$('#bigTable').simpleTableSort({
+  excludeSortColumns: [ 1 ] // Index of 1; columns start zero-based
+});
+</pre>
+
+<p>
+Column "Mail address" is custom sorted by the domain name. This is achieved with a custom sort method <code>customMail</code>:</p>
 <pre>
 $('#bigTable').simpleTableSort({
   sortMethods: {
@@ -49,8 +73,13 @@ $('#bigTable').simpleTableSort({
   }
 });
 </pre>
-</p>
+<p>To "tell" the head column "Mail address" to sort by this method, you have to add a css class to the <code>th</code> tag like this:</p>
+<pre>
+&lt;th class="sort-customMail"&gt;Mail address&lt;th&gt;
+</pre>
+</article>
 
+<article id="example">
 <table cellspacing="0" cellpadding="0" id="bigTable">
   <thead>
     <tr>
@@ -2072,6 +2101,6 @@ $('#bigTable').simpleTableSort({
     </tr>
   </tbody>
 </table>
-
+</article>
 </body>
 </html>

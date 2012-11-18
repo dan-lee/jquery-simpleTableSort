@@ -8,6 +8,12 @@ This is a simple plugin for jQuery, which adds the capability of sorting rows of
 ### Basic usage
 
 The easiest way to start off is:
+
+```html
+<script src="jquery.js"></script>
+<script src="jquery.simpleTableSort.js"></script>
+```
+
 ```javascript
 $(function() {
   $('#myTable').simpleTableSort();

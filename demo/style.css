@@ -16,6 +16,7 @@ th {
   font-weight: bold;
   border-right: 1px solid #94a7ff;
   border-bottom: 1px solid #94a7ff;
+  min-width: 150px;
 }
 
 th:last-child {
@@ -48,4 +49,82 @@ tr:last-child td {
 code {
   background: #ebebeb;
   padding: 0 3px;
+}
+
+#desc-link {
+  background: #f0f7ff;
+  padding: 3px 10px;
+  border: 1px solid #aed1ff;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#desc-link:hover {
+  background: #deebff;
+}
+
+#desc {
+  display: none;
+}
+
+#example {
+  margin-top: 25px;
+}
+
+/* simple table sort specific css */
+
+th {
+}
+
+th.sort-alphabetical, th.sort-numeric, th.sort-date, th.sort-customMail {
+  background-image: url('http://localhost/_icons/fugue/icons-shadowless/sort.png');
+  background-repeat: no-repeat;
+  background-position: 98% center;
+}
+
+th.sort-disabled {
+  background-image: none;
+}
+
+th.sort-alphabetical.sort-asc {
+  background-image: url('assets/sort-alphabet.png')
+}
+
+th.sort-alphabetical.sort-desc {
+  background-image: url('assets/sort-alphabet-descending.png')
+}
+
+th.sort-numeric.sort-asc {
+  background-image: url('assets/sort-number.png')
+}
+
+th.sort-numeric.sort-desc {
+  background-image: url('assets/sort-number-descending.png')
+}
+
+th.sort-date.sort-asc {
+  background-image: url('assets/sort-date.png')
+}
+
+th.sort-date.sort-desc {
+  background-image: url('assets/sort-date-descending.png')
+}
+
+th.sort-customMail.sort-asc {
+  background-image: url('assets/sort-rating.png')
+}
+
+th.sort-customMail.sort-desc {
+  background-image: url('assets/sort-rating-descending.png')
+}
+
+#sort-loading {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 35%;
+  background: rgb(247, 248, 250);
+  padding: 5px 27px;
+  border: 1px solid #000;
+  opacity: 0.5;
 }
