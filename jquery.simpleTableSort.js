@@ -34,6 +34,12 @@
     dynamic: false,
 
     /**
+     * With this option set to 'true' the state classes of the columns (e.g. 'sort-asc' and 'sort-desc') won't be removed when a different column is sorted.
+     * However, the last sort state is never 'forgotten', it will always be the opposite of the last sorted (or the default)
+     */
+    multiSortStates: false,
+
+    /**
      * Adds the possibility to sort the table entries when the table is created.
      * Accepts index values of table head column (zero-based).
      */
@@ -135,7 +141,7 @@
       $.each(this.options.excludeSortColumns, function(i, val) {
         var col = self.cols.eq(val);
         var newClass = col.prop('class').replace(new RegExp('\\s?\\b'+self.options.prefix+'[^\\s]+\\s?', 'g'), '');
-        col.prop('class', newClass).addClass('sort-disabled');
+        col.prop('class', newClass);
       });
 
       // call this after all options are processed to ensure that sorting is possible
@@ -229,6 +235,11 @@
           if (this.isExcluded(columnIndex)) {
             return false;
           }
+
+          if (this.options.multiSortStates === false) {
+            this.cols.removeClass(this.options.prefix+'asc').removeClass(this.options.prefix+'desc');
+          }
+
           this.options.onBeforeSort.call($(element), columnIndex);
 
           this.toggleOrder(element, columnIndex);
@@ -239,7 +250,7 @@
           this.options.onAfterSort.call($(element), columnIndex);
 
           return true;
-        } else console.error('No suitable sort method found.');
+        } else console.error('No suitable sort method for '+element.className+' found.');
       }
       return false;
     },

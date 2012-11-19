@@ -100,6 +100,15 @@ $('#myTable').simpleTableSort({
     This is for performance reason: If it's a static table the rows don't have to be reprocessed every sort change.
    </td>
   </tr>
+    <tr>
+     <td valign="top"><code>multiSortStates</code></td>
+     <td valign="top">bool</td>
+     <td valign="top"><code>false</code></td>
+     <td valign="top">
+       With this option set to <code>true</code> the state classes (e.g. 'sort-asc' and 'sort-desc') won't be removed when a different column is sorted.<br>
+       However, the last sort state is never 'forgotten', it will always be the opposite of the last sorted (or the default)
+     </td>
+    </tr>
   <tr>
    <td valign="top"><code>autoSort</code></td>
    <td valign="top">int</td>

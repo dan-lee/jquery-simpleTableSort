@@ -85,6 +85,10 @@ th.sort-disabled {
   background-image: none;
 }
 
+th.sort-asc, th.sort-desc {
+  background-color: #aed1ff;
+}
+
 th.sort-alphabetical.sort-asc {
   background-image: url('assets/sort-alphabet.png')
 }
