@@ -77,7 +77,6 @@ th {
 }
 
 th.sort-alphabetical, th.sort-numeric, th.sort-date, th.sort-customMail {
-  background-image: url('http://localhost/_icons/fugue/icons-shadowless/sort.png');
   background-repeat: no-repeat;
   background-position: 98% center;
 }
