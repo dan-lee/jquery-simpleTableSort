@@ -73,7 +73,7 @@ $('#myTable').simpleTableSort({
    <td valign="top"><code>"sort"</code></td>
    <td valign="top">
     Changes the prefix of the used css classes in the plugin.<br>
-    These classes will be appended to the head columns to determine which state they were.<br>
+    These classes will be appended to the head columns to determine in which sort state they were ('asc' or 'desc').<br>
     If the prefix 'sort' is already used in your project you can change this value.
    </td>
   </tr>
