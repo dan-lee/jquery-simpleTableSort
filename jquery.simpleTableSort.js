@@ -107,62 +107,89 @@
     onAfterSort: function () {}
   };
 
+  /**
+   * @param element
+   * @param options
+   * @constructor
+   */
   function Plugin(element, options) {
     priv.init(element, options);
   }
 
   var priv = {
+    /**
+     * Doing initial stuff
+     *
+     * @param element
+     * @param options
+     */
     init: function(element, options) {
       this.options = $.extend(true, {}, defaults, options);
 
-      this.table = element;
-      this.$table = $(element);
+      this.table = $(element);
 
+        // If enabled, fix the table head structure before processing the rows and columns
       if (this.options.fixTableHead === true) {
-        // fix table head structure right away before trying to find the rows and cols
         this.fixTableHead();
       }
 
-      this.rows = this.$table.find('tbody').children();
+      this.rows = this.table.find('tbody').children();
       this.rowLength = this.rows.length;
-      this.cols = this.$table.find('thead').find('th');
+      this.cols = this.table.find('thead').find('th');
 
       this.sortOrder = new Array(this.cols.length);
       this.sortModes = ['asc', 'desc'];
 
       var self = this;
       this.cols.on('click', function() {
-        // call this in a closure to maintain the scope of the 'sort' method
+        // Call this in a closure to maintain the scope of the 'sort' method
         self.sort(this);
       });
 
+      // Append '-' to the prefix if necessary. So a class name is always a string like 'prefix-suffix'
       this.options.prefix += (this.options.prefix.slice(-1) !== '-' ? '-' : '');
 
+      // Remove all sort-* class names from the columns which are excluded form sorting
       $.each(this.options.excludeSortColumns, function(i, val) {
         var col = self.cols.eq(val);
         var newClass = col.prop('class').replace(new RegExp('\\s?\\b'+self.options.prefix+'[^\\s]+\\s?', 'g'), '');
         col.prop('class', newClass);
       });
 
-      // call this after all options are processed to ensure that sorting is possible
+      // Call this after all options are processed to ensure that sorting is possible
       if (this.options.autoSort !== null) {
         this.cols.eq(parseInt(this.options.autoSort)).trigger('click');
       }
     },
 
+    /**
+     * see option 'fixTableHead'
+     */
     fixTableHead: function() {
       var thead = $('<thead></thead>');
-      var child = this.$table.find('tr').first().remove();
-      this.$table.prepend(thead.append(child));
+      var child = this.table.find('tr').first().remove();
+      this.table.prepend(thead.append(child));
     },
 
+    /**
+     * Toggles the internal sort state of every head column, and also changes the "external" state representation.
+     * This means that class names are appended/removed by the state. So it's easy to style the columns with css
+     * based on their class names.
+     *
+     * @param element
+     * @param columnIndex
+     */
     toggleOrder: function(element, columnIndex) {
       var currentOrder = this.sortOrder[columnIndex];
       var newKey, oldKey;
 
-      // this case occurs when this column wasn't sorted before
-      if (typeof currentOrder === 'undefined') {
+      // Remove sort classes from all head columns if multi sort states is deactivated
+      if (this.options.multiSortStates === false) {
+        this.cols.removeClass(this.options.prefix+'asc').removeClass(this.options.prefix+'desc');
+      }
 
+      // This case occurs when this column wasn't sorted before
+      if (typeof currentOrder === 'undefined') {
         // find out the index of the 'toggle array' by the default sort order
         newKey = this.helper.getIndexByValue(this.sortModes, this.options.order);
         // set the order initially, so on the next sorting process the order can be toggled
@@ -170,7 +197,7 @@
         $(element).addClass(this.options.prefix + this.sortModes[newKey]);
       } else {
         oldKey = this.helper.getIndexByValue(this.sortModes, currentOrder);
-        // little trick for toggling two values in an array (there may be only two values in this array):
+        // Little trick for toggling two values in an array (there may be only two values in this array!):
         // 1. cast to bool, 2. negate the value, 3. cast back to int
         newKey = +!oldKey;
         this.sortOrder[columnIndex] = this.sortModes[newKey];
@@ -179,74 +206,93 @@
       }
     },
 
+    /**
+     * Returns, based on the options, whether this is an excluded column or not.
+     * Also allows negative values. (Means: starting from the end)
+     *
+     * @param current
+     * @return {boolean}
+     */
     isExcluded: function(current) {
       var len = this.cols.length;
 
-      // is the clicked column an excluded one? if so: abort
-      var abort = false;
+      var excluded = false;
       $.each(this.options.excludeSortColumns, function(i, val) {
         val += val < 0 ? len : 0;
 
         if (current === val) {
-          abort = true;
+          excluded = true;
         }
       });
-      return abort;
+      return excluded;
     },
 
+    /**
+     * The actual sort algorithm is executed here.
+     *
+     * @param method
+     * @param columnIndex
+     */
     sortBy: function(method, columnIndex) {
       var self = this;
       this.rows.sort(function(a, b) {
-        // take the text of the rows for the comparison
+        // Take the text of the rows for the comparison
         a = $(a).find('td').eq(columnIndex).text();
         b = $(b).find('td').eq(columnIndex).text();
 
+        // If one of value of a and b is falsey, don't bother to compare them.
         if (!a || !b) {
           return 0;
         }
 
-        return self.options.sortMethods[method](a, b) * (self.sortOrder[columnIndex] === self.sortModes[0] ? 1 : -1);
+        // The return value of the actual sort algorithm is multiplied by the current sort order, but inverted
+        // 'asc' turns to 'desc' (1 => -1)
+        return self.options.sortMethods[method](a, b) * (self.sortOrder[columnIndex] === self.helper.getIndexByValue(self.sortMethods, 'asc') ? 1 : -1);
       });
     },
 
+    /**
+     * If the table is set to dynamic, then reprocess the table before each sort process
+     */
     updateRows: function() {
-      var newChildren = this.$table.find('tbody').children(),
-          newRowLength = newChildren.length;
+      if (this.options.dynamic === true) {
+        var newChildren = this.table.find('tbody').children(),
+            newRowLength = newChildren.length;
 
-      if (newRowLength != this.rowLength) {
-        this.rows = newChildren;
-        this.rowLength = newRowLength;
+        if (newRowLength != this.rowLength) {
+          this.rows = newChildren;
+          this.rowLength = newRowLength;
+        }
       }
     },
 
+    /**
+     * Is called when a table head column is clicked
+     *
+     * @param element
+     * @return {boolean}
+     */
     sort: function(element) {
       var columnIndex = this.cols.index(element);
-
-      if (this.options.dynamic === true) {
-        this.updateRows();
-      }
 
       // check if there's a class starting with the given prefix
       if (new RegExp('\\b' + this.options.prefix).test(element.className)) {
         var method = element.className.match(new RegExp(this.options.prefix + '([^\\s]+)'))[1];
 
         if (this.options.sortMethods.hasOwnProperty(method)) {
-          // is the clicked column an excluded one? if so: abort
           if (this.isExcluded(columnIndex)) {
             return false;
           }
 
-          if (this.options.multiSortStates === false) {
-            this.cols.removeClass(this.options.prefix+'asc').removeClass(this.options.prefix+'desc');
-          }
-
+          // This user defined event is called before sorting
           this.options.onBeforeSort.call($(element), columnIndex);
 
+          this.updateRows();
           this.toggleOrder(element, columnIndex);
           this.sortBy(method, columnIndex);
           this.render();
 
-          // call after sort hook
+          // This user defined event is called after sorting
           this.options.onAfterSort.call($(element), columnIndex);
 
           return true;
@@ -255,9 +301,12 @@
       return false;
     },
 
+    /**
+     * Re-renders the table after it's sorted
+     */
     render: function() {
       $.each(this.rows, function(i, val) {
-        priv.$table.append(val);
+        priv.table.append(val);
       });
     },
 
