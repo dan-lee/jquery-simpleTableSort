@@ -145,9 +145,9 @@
         sortMethods: {
           ownDate: function(a, b) {
             a = a.split('_');
-            a = a[1]+'-'+a[0]+'-'+a[2];
+            a = a[1]+'/'+a[0]+'/'+a[2];
             b = b.split('_');
-            b = b[1]+'-'+b[0]+'-'+b[2];
+            b = b[1]+'/'+b[0]+'/'+b[2];
 
             a = new Date(a);
             b = new Date(b);
