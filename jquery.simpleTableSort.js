@@ -247,7 +247,7 @@
 
         // The return value of the actual sort algorithm is multiplied by the current sort order, but inverted
         // 'asc' turns to 'desc' (1 => -1)
-        return self.options.sortMethods[method](a, b) * (self.sortOrder[columnIndex] === self.helper.getIndexByValue(self.sortModes, 'asc') ? 1 : -1);
+        return self.options.sortMethods[method](a, b) * (self.sortOrder[columnIndex] === self.sortModes[0] ? 1 : -1);
       });
     },
 
