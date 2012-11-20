@@ -190,9 +190,9 @@
 
       // This case occurs when this column wasn't sorted before
       if (typeof currentOrder === 'undefined') {
-        // find out the index of the 'toggle array' by the default sort order
+        // Find out the index of the 'toggle array' by the default sort order
         newKey = this.helper.getIndexByValue(this.sortModes, this.options.order);
-        // set the order initially, so on the next sorting process the order can be toggled
+        // Set the order initially, so on the next sorting process the order can be toggled
         this.sortOrder[columnIndex] = this.sortModes[newKey];
         $(element).addClass(this.options.prefix + this.sortModes[newKey]);
       } else {
@@ -275,7 +275,7 @@
     sort: function(element) {
       var columnIndex = this.cols.index(element);
 
-      // check if there's a class starting with the given prefix
+      // Check if there's a class starting with the given prefix
       if (new RegExp('\\b' + this.options.prefix).test(element.className)) {
         var method = element.className.match(new RegExp(this.options.prefix + '([^\\s]+)'))[1];
 
@@ -312,7 +312,7 @@
 
     helper: {
       isDate: function(d) {
-        // http://stackoverflow.com/a/1353711/612202
+        // Taken from http://stackoverflow.com/a/1353711/612202
         if (Object.prototype.toString.call(d) === '[object Date]') {
           return !isNaN(d.getTime());
         } else {
