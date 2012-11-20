@@ -46,6 +46,19 @@ Just add one of the following built-in sort methods as class to your `th` tag:
 * `sort-date`: Sorts data by date (Note: relies on JavaScript built-in [`Date`](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date) object. Has to be compliant to [RFC2822 Section 3.3](http://tools.ietf.org/html/rfc2822#page-14))
 * `sort-float`: Sorts data by floating point values
 
+When a column is clicked a class name is appended: `sort-asc` or `sort-desc`.
+
+So when clicking on the column "Id" with [default options](#options) the modified `th` tag looks like this:
+
+```html
+<!-- first click -->
+<th class="sort-numeric sort-asc">Id</th>
+
+<!-- second click -->
+<th class="sort-numeric sort-desc">Id</th>
+```
+
+
 ## Advanced usage
 
 You can easily configurate the plugin with omitting an object like this
