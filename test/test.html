@@ -108,6 +108,42 @@
       table.remove();
     });
 
+    test('Set dynamic table', function() {
+      table = createTestTable(testColumns, testRows).simpleTableSort({ dynamic: true });
+
+      table.find('tbody tr:lt(2)').remove();
+
+      var expected = ['Dorian', 'Laith', 'Zaphod'];
+      table.clickHeadCol(0);
+
+      var actual = table.collectActualData(0);
+
+      deepEqual(actual, expected, 'Table rows were updated dynamically');
+
+      table.remove();
+    });
+
+    test('Set multi stort state', function() {
+      table = createTestTable(testColumns, testRows).simpleTableSort({ multiSortStates: true });
+
+      table.clickHeadCol(0);
+      table.clickHeadCol(1);
+
+      var passed = true;
+
+      table.find('tbody th:lt(2)').each(function() {
+        passed = $(this).hasClass('sort-asc');
+      });
+
+      table.find('tbody th:gt(1)').each(function() {
+        passed = !$(this).hasClass('sort-asc');
+      });
+
+      ok(passed, 'Head columns keep the state of current order');
+
+      table.remove();
+    });
+
     test('Set auto order on table creation', function() {
       table = createTestTable(testColumns, testRows).simpleTableSort({ autoSort: 0 });
 
