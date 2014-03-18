@@ -27,7 +27,7 @@ You have to adjust your table slightly, so that the plugin knows how to sort you
  <thead>
   <tr>
    <th class="sort-numeric">Id</th>
-   <th class="sort-alphabetic">Name</th>
+   <th class="sort-alphabetical">Name</th>
    <th class="sort-date">Birth date</th>
    <th class="sort-float">Height</th>
   </tr>
